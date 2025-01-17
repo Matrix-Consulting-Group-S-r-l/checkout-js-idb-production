@@ -36,13 +36,19 @@ const ShippingOptionListItem: FunctionComponent<ShippingOptionListItemProps> = (
         [isSelected, isMultiShippingMode, shippingOption],
     );
 
-
+    // ---------------- [MTX MOD] ---------------
     return (
+        <div
+        style={{
+          display: shippingOption.description === 'Corriere Contrassegno' ? 'none' : 'block',
+        }}
+      >
         <ChecklistItem
-            htmlId={`shippingOptionRadio-${consignmentId}-${shippingOption.id}`}
-            label={renderLabel}
-            value={shippingOption.id}
+          htmlId={`shippingOptionRadio-${consignmentId}-${shippingOption.id}`}
+          label={renderLabel}
+          value={shippingOption.id}
         />
+      </div>
     );
 };
 
