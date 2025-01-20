@@ -1,6 +1,6 @@
 export const mtxConfig = {
     shippingMethods: {
-        corriereStandard: 'Corriere  Standard',
+        corriereStandard: 'Corriere Espresso',
         corriereContrassegno: 'Corriere Contrassegno',
         
     }
