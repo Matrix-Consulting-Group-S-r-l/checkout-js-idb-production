@@ -61,7 +61,7 @@
             "estimated_total_text": "Totale stimato",
             "free_text": "Gratis",
             "gift_certificate_text": "Buono regalo",
-            "handling_text": "Gestione",
+            "handling_text": "Commissione contrassegno",
             "item": "Articolo",
             "items": "articoli",
             "item_count_text": "{count, plural, one{1 articolo} other{# articoli} }",

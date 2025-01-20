@@ -120,7 +120,27 @@ class Payment extends Component<
     };
   });
 
+  // ------------[MTX START]------------------------
+  private getValidDefaultMethod(): PaymentMethod | undefined {
+    const { defaultMethod, methods } = this.props;
+    const { selectedMethod } = this.state;
+
+    // Usa il metodo selezionato o il default se disponibile
+    if (selectedMethod) {
+      return selectedMethod;
+    }
+
+    if (defaultMethod) {
+      return defaultMethod;
+    }
+
+    // Restituisci il primo metodo disponibile come fallback
+    return methods.length > 0 ? methods[0] : undefined;
+  }
+  // ------------[MTX END]------------------------
+
   async componentDidMount(): Promise<void> {
+
     const {
       finalizeOrderIfNeeded,
       onFinalize = noop,
@@ -146,6 +166,13 @@ class Payment extends Component<
         onFinalizeError(error);
       }
     }
+
+    // ------------[MTX START]------------------------
+    const validMethod = this.getValidDefaultMethod();
+    if (validMethod) {
+        this.setSelectedMethod(validMethod); // Metodo valido garantito
+    }
+    // ------------[MTX END]------------------------
 
     this.grandTotalChangeUnsubscribe = checkoutServiceSubscribe(
       () => this.handleCartTotalChange(),
@@ -491,6 +518,7 @@ class Payment extends Component<
   };
 
   private setSelectedMethod: (method?: PaymentMethod) => void = (method) => {
+    console.log("setSelectedMethod", 1);
     const { checkoutService, getPaymentMethods } = this.props; // --------------[MTX MOD (Single Line)]--------------
     const { selectedMethod } = this.state;
 
@@ -498,11 +526,17 @@ class Payment extends Component<
       return;
     }
 
+    console.log("setSelectedMethod", 2);
+
     if (method) {
+
+      console.log("setSelectedMethod", 3);
       // ------------[MTX START]------------------------
       if (method?.id == 'cod') {
+        console.log("setSelectedMethod", 4);
         selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereContrassegno);
       } else {
+        console.log("setSelectedMethod", 5);
         selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereStandard);
       }
 

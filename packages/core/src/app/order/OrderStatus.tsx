@@ -5,6 +5,7 @@ import { TranslatedHtml } from '@bigcommerce/checkout/locale';
 
 import OrderConfirmationSection from './OrderConfirmationSection';
 import { PaymentsWithMandates } from './PaymentsWithMandates';
+import { mtxConfig } from '../mtxConfig';
 
 export interface OrderStatusProps {
     config: StoreConfig;
@@ -28,6 +29,9 @@ const OrderStatus: FunctionComponent<OrderStatusProps> = ({
 }) => {
     const paymentsWithMandates = order.payments?.filter(isPaymentWithMandate) || [];
 
+    // ---------------MTX [Single Line]--------------
+    const isCodMethod: boolean = !!order.payments?.some((payment: any) => payment.providerId === 'cod');
+
     return (
         <OrderConfirmationSection>
             {order.orderId && (
@@ -40,13 +44,17 @@ const OrderStatus: FunctionComponent<OrderStatusProps> = ({
             )}
 
             <p data-test="order-confirmation-order-status-text">
-                <OrderStatusMessage
-                    config={config}
-                    orderNumber={order.orderId}
-                    orderStatus={order.status}
-                    supportEmail={supportEmail}
-                    supportPhoneNumber={supportPhoneNumber}
-                />
+                {isCodMethod == true ?
+                    <span>{mtxConfig.OrderConfirmation.textCod}</span>
+                    :
+                    <OrderStatusMessage
+                        config={config}
+                        orderNumber={order.orderId}
+                        orderStatus={order.status}
+                        supportEmail={supportEmail}
+                        supportPhoneNumber={supportPhoneNumber}
+                    />
+                }
             </p>
             <PaymentsWithMandates
                 paymentsWithMandates={paymentsWithMandates}
