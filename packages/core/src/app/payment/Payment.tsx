@@ -84,6 +84,7 @@ interface WithCheckoutPaymentProps {
 }
 
 import { getGlobalState, setGlobalState } from './GlobalState';
+import { mtxConfig } from '../mtxConfig';
 
 interface PaymentState {
   didExceedSpamLimit: boolean;
@@ -500,9 +501,9 @@ class Payment extends Component<
     if (method) {
       // ------------[MTX START]------------------------
       if (method?.id == 'cod') {
-        selectCarrier(checkoutService, 'Corriere Contrassegno');
+        selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereContrassegno);
       } else {
-        selectCarrier(checkoutService, 'Corriere  Standard');
+        selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereStandard);
       }
 
       const methodSelected = getPaymentMethods().findIndex((pay: any) => pay.id === method?.id);
