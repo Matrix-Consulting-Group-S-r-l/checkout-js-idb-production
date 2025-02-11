@@ -7,6 +7,8 @@ import getCustomFormFieldsValidationSchema, {
 
 export const WHITELIST_REGEXP = /^[^<>]*$/;
 
+export const PHONE_REGEXP = /^(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}$/; // ---------------MTX [Single Line]--------------
+
 export interface FormFieldValues {
     [key: string]: string | { [id: string]: any };
 }
@@ -26,8 +28,17 @@ export default memoize(function getFormFieldsValidationSchema({
                 if (required) {
                     schema[name] = schema[name]
                         .trim()
-                        .required(translate('required', { label, name}));
+                        .required(translate('required', { label, name }));
                 }
+
+                // ---------------MTX [Multiple Line - INIT]--------------
+                if (required && name === 'phone') {
+                    schema[name] = schema[name].matches(
+                        PHONE_REGEXP,
+                        translate('invalid', { name, label }),
+                    );
+                }
+                // ---------------MTX [Multiple Line - END]--------------
 
                 if (name === 'address1' && maxLength && validateGoogleMapAutoCompleteMaxLength) {
                     schema[name] = schema[name]
