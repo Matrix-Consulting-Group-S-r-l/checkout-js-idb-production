@@ -77,8 +77,11 @@ const PaymentForm: FunctionComponent<
     usableStoreCredit = 0,
     values,
 }) => {
+        const [isInvoiceValidated, setIsInvoiceValidated] = useState(false);
         const [isInvoiceChecked, setIsInvoiceChecked] = useState(false);
-        console.log("hide payment", isInvoiceChecked);
+
+        console.log("show invoice", "CHECKED", isInvoiceChecked, "INVOICE", isInvoiceValidated);
+
         const selectedMethodId = useMemo(() => {
             if (!selectedMethod) {
                 return;
@@ -117,8 +120,6 @@ const PaymentForm: FunctionComponent<
             );
         }
 
-        console.log("hide payment");
-
         return (
             <Form className="checkout-form" testId="payment-form">
                 {usableStoreCredit > 0 && (
@@ -153,10 +154,14 @@ const PaymentForm: FunctionComponent<
                 )}
 
                 {/* MTX Single line */}
-                <ReceiveInvoice isInvoiceChecked={isInvoiceChecked} setIsInvoiceChecked={setIsInvoiceChecked} />
+                <ReceiveInvoice
+                    isInvoiceValidated={isInvoiceValidated}
+                    setIsInvoiceValidated={setIsInvoiceValidated}
+                    isInvoiceChecked={isInvoiceChecked}
+                    setIsInvoiceChecked={setIsInvoiceChecked} />
 
                 <div className="form-actions">
-                    {shouldHidePaymentSubmitButton || isInvoiceChecked ? (
+                    {shouldHidePaymentSubmitButton || (isInvoiceChecked ? !isInvoiceValidated : false) ? (
                         <PaymentMethodSubmitButtonContainer />
                     ) : (
                         <PaymentSubmitButton
