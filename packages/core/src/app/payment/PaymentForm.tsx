@@ -1,4 +1,4 @@
-import { PaymentMethod } from '@bigcommerce/checkout-sdk';
+import { BillingAddressRequestBody, CheckoutService, PaymentMethod } from '@bigcommerce/checkout-sdk';
 import { FormikProps, withFormik, WithFormikConfig } from 'formik';
 import { isNil, noop, omitBy } from 'lodash';
 import React, { FunctionComponent, memo, useCallback, useContext, useMemo, useState } from 'react';
@@ -49,6 +49,7 @@ export interface PaymentFormProps {
     onStoreCreditChange?(useStoreCredit?: boolean): void;
     onSubmit?(values: PaymentFormValues): void;
     onUnhandledError?(error: Error): void;
+    checkoutService: CheckoutService;
 }
 
 const PaymentForm: FunctionComponent<
@@ -76,11 +77,10 @@ const PaymentForm: FunctionComponent<
     termsConditionsUrl,
     usableStoreCredit = 0,
     values,
+    checkoutService
 }) => {
         const [isInvoiceValidated, setIsInvoiceValidated] = useState(false);
         const [isInvoiceChecked, setIsInvoiceChecked] = useState(false);
-
-        console.log("show invoice", "CHECKED", isInvoiceChecked, "INVOICE", isInvoiceValidated);
 
         const selectedMethodId = useMemo(() => {
             if (!selectedMethod) {
@@ -158,7 +158,9 @@ const PaymentForm: FunctionComponent<
                     isInvoiceValidated={isInvoiceValidated}
                     setIsInvoiceValidated={setIsInvoiceValidated}
                     isInvoiceChecked={isInvoiceChecked}
-                    setIsInvoiceChecked={setIsInvoiceChecked} />
+                    setIsInvoiceChecked={setIsInvoiceChecked}
+                    checkoutService={checkoutService}
+                    />
 
                 <div className="form-actions">
                     {shouldHidePaymentSubmitButton || (isInvoiceChecked ? !isInvoiceValidated : false) ? (

@@ -252,6 +252,7 @@ class Payment extends Component<
               validationSchema={
                 (uniqueSelectedMethodId && validationSchemas[uniqueSelectedMethodId]) || undefined
               }
+              checkoutService={this.props.checkoutService}
             />
           )}
         </ChecklistSkeleton>
