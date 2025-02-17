@@ -104,7 +104,7 @@ export default function ReceiveInvoice({ isInvoiceValidated, setIsInvoiceValidat
 
                                 {/* Campo Nome Azienda */}
                                 <div className={`dynamic-form-field floating-form-field ${errors.company ? 'form-field--error' : ''}`}>
-                                    <div className="form-field">
+                                    <div className="form-field" style={{ marginBottom: '15px' }}>
                                         <input
                                             id="companyInput"
                                             type="text"
@@ -162,7 +162,7 @@ export default function ReceiveInvoice({ isInvoiceValidated, setIsInvoiceValidat
                                     </div>
                                 </div>
 
-                                <div className="form-actions">
+                                <div className="form-actions" style={{ marginBottom: '15px' }}>
                                     <button
                                         id="checkout-payment-continue"
                                         className="button button--large button--slab optimizedCheckout-buttonPrimary"
