@@ -1,7 +1,7 @@
 import { PaymentMethod } from '@bigcommerce/checkout-sdk';
 import { FormikProps, withFormik, WithFormikConfig } from 'formik';
 import { isNil, noop, omitBy } from 'lodash';
-import React, { FunctionComponent, memo, useCallback, useContext, useMemo } from 'react';
+import React, { FunctionComponent, memo, useCallback, useContext, useMemo, useState } from 'react';
 import { ObjectSchema } from 'yup';
 
 import { withLanguage, WithLanguageProps } from '@bigcommerce/checkout/locale';
@@ -77,6 +77,8 @@ const PaymentForm: FunctionComponent<
     usableStoreCredit = 0,
     values,
 }) => {
+        const [isInvoiceChecked, setIsInvoiceChecked] = useState(false);
+        console.log("hide payment", isInvoiceChecked);
         const selectedMethodId = useMemo(() => {
             if (!selectedMethod) {
                 return;
@@ -115,6 +117,8 @@ const PaymentForm: FunctionComponent<
             );
         }
 
+        console.log("hide payment");
+
         return (
             <Form className="checkout-form" testId="payment-form">
                 {usableStoreCredit > 0 && (
@@ -149,10 +153,10 @@ const PaymentForm: FunctionComponent<
                 )}
 
                 {/* MTX Single line */}
-                <ReceiveInvoice />
+                <ReceiveInvoice isInvoiceChecked={isInvoiceChecked} setIsInvoiceChecked={setIsInvoiceChecked} />
 
                 <div className="form-actions">
-                    {shouldHidePaymentSubmitButton ? (
+                    {shouldHidePaymentSubmitButton || isInvoiceChecked ? (
                         <PaymentMethodSubmitButtonContainer />
                     ) : (
                         <PaymentSubmitButton
