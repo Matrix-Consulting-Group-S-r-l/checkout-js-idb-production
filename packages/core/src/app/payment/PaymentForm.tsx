@@ -1,4 +1,4 @@
-import { BillingAddressRequestBody, CheckoutService, PaymentMethod } from '@bigcommerce/checkout-sdk';
+import { CheckoutService, PaymentMethod } from '@bigcommerce/checkout-sdk';
 import { FormikProps, withFormik, WithFormikConfig } from 'formik';
 import { isNil, noop, omitBy } from 'lodash';
 import React, { FunctionComponent, memo, useCallback, useContext, useMemo, useState } from 'react';

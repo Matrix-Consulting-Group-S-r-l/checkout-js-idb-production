@@ -531,7 +531,6 @@ class Payment extends Component<
 
     if (method) {
 
-      
       // ------------[MTX START]------------------------
       if (method?.id == 'cod') {
         
