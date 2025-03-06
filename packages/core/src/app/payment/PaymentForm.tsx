@@ -1,7 +1,7 @@
 import { CheckoutService, PaymentMethod } from '@bigcommerce/checkout-sdk';
 import { FormikProps, withFormik, WithFormikConfig } from 'formik';
 import { isNil, noop, omitBy } from 'lodash';
-import React, { FunctionComponent, memo, useCallback, useContext, useMemo, useState } from 'react';
+import React, { FunctionComponent, memo, useCallback, useContext, useMemo, useState, useEffect } from 'react';
 import { ObjectSchema } from 'yup';
 
 import { withLanguage, WithLanguageProps } from '@bigcommerce/checkout/locale';
@@ -79,8 +79,27 @@ const PaymentForm: FunctionComponent<
     values,
     checkoutService
 }) => {
-        const [isInvoiceValidated, setIsInvoiceValidated] = useState(false);
-        const [isInvoiceChecked, setIsInvoiceChecked] = useState(false);
+        //const [isInvoiceValidated, setIsInvoiceValidated] = useState<boolean>(false);
+        //const [isInvoiceChecked, setIsInvoiceChecked] = useState<boolean>(false);
+        // Inizializza lo stato leggendo dal localStorage
+        const [isInvoiceChecked, setIsInvoiceChecked] = useState<boolean>(() => {
+            const saved = localStorage.getItem("isInvoiceChecked");
+            return saved ? JSON.parse(saved) : false; // Se esiste un valore salvato, lo usiamo
+        });
+
+        const [isInvoiceValidated, setIsInvoiceValidated] = useState<boolean>(() => {
+            const saved = localStorage.getItem("isInvoiceValidated");
+            return saved ? JSON.parse(saved) : false;
+        });
+
+        // Effetto per salvare lo stato quando cambia
+        useEffect(() => {
+            localStorage.setItem("isInvoiceChecked", JSON.stringify(isInvoiceChecked));
+        }, [isInvoiceChecked]);
+
+        useEffect(() => {
+            localStorage.setItem("isInvoiceValidated", JSON.stringify(isInvoiceValidated));
+        }, [isInvoiceValidated]);
 
         const selectedMethodId = useMemo(() => {
             if (!selectedMethod) {
@@ -160,7 +179,7 @@ const PaymentForm: FunctionComponent<
                     isInvoiceChecked={isInvoiceChecked}
                     setIsInvoiceChecked={setIsInvoiceChecked}
                     checkoutService={checkoutService}
-                    />
+                />
 
                 <div className="form-actions">
                     {shouldHidePaymentSubmitButton || (isInvoiceChecked ? !isInvoiceValidated : false) ? (

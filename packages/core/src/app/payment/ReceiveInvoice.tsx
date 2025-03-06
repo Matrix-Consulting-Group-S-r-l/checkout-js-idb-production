@@ -22,10 +22,22 @@ export default function ReceiveInvoice({
   const [isAllowed, setIsAllowed] = useState(false);
 
 
+  /*
   const [formData, setFormData] = useState({
     company: '',
     vat: '',
   });
+  */
+  // Recupera i dati dal localStorage all'inizio
+  const [formData, setFormData] = useState<{ company: string; vat: string }>(() => {
+    const saved = localStorage.getItem("formData");
+    return saved ? JSON.parse(saved) : { company: '', vat: '' }; // Se esistono dati salvati, li usiamo
+  });
+
+  // Effetto per salvare `formData` quando cambia
+  useEffect(() => {
+    localStorage.setItem("formData", JSON.stringify(formData));
+  }, [formData]);
 
   const [errors, setErrors] = useState({
     company: '',
@@ -57,7 +69,16 @@ export default function ReceiveInvoice({
   }
 
   const handleCheckboxChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.checked) {
+    console.log("handleCheckboxChange")
+    const isChecked: boolean = event.target.checked;
+
+    setIsInvoiceChecked(isChecked);
+    setIsInvoiceValidated(isChecked);
+
+    // Aspetta un ciclo di aggiornamento dello stato prima di eseguire altre azioni
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    if (!isChecked) {
       // Svuota i campi se la checkbox viene deselezionata
       setFormData({
         company: '',
@@ -66,9 +87,12 @@ export default function ReceiveInvoice({
 
       await clearBillingAddressFields();
     }
-    setIsInvoiceChecked(event.target.checked);
-    setIsInvoiceValidated(false);
+
+    console.log("Stato aggiornato, isInvoiceChecked:", isChecked);
   };
+
+
+
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -228,9 +252,8 @@ export default function ReceiveInvoice({
 
                 {/* Campo Nome Azienda */}
                 <div
-                  className={`dynamic-form-field floating-form-field ${
-                    errors.company ? 'form-field--error' : ''
-                  }`}
+                  className={`dynamic-form-field floating-form-field ${errors.company ? 'form-field--error' : ''
+                    }`}
                 >
                   <div className="form-field" style={{ marginBottom: '15px' }}>
                     <input
@@ -246,7 +269,7 @@ export default function ReceiveInvoice({
                       htmlFor="companyInput"
                       className="floating-label form-label optimizedCheckout-form-label"
                     >
-                      Nome dell'azienda
+                      Intestatario Fattura
                     </label>
                     {errors.company && (
                       <ul className="form-field-errors" data-test="company-error-message">
@@ -262,9 +285,8 @@ export default function ReceiveInvoice({
 
                 {/* Campo Partita IVA */}
                 <div
-                  className={`dynamic-form-field floating-form-field ${
-                    errors.vat ? 'form-field--error' : ''
-                  }`}
+                  className={`dynamic-form-field floating-form-field ${errors.vat ? 'form-field--error' : ''
+                    }`}
                 >
                   <div className="form-field">
                     <input
@@ -280,7 +302,7 @@ export default function ReceiveInvoice({
                       htmlFor="vatInput"
                       className="floating-label form-label optimizedCheckout-form-label"
                     >
-                      Partita IVA
+                      Partiva IVa /Codice fiscale
                     </label>
                     {errors.vat && (
                       <ul className="form-field-errors" data-test="vat-error-message">
