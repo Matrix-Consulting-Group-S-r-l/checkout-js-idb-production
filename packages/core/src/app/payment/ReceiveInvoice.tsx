@@ -18,7 +18,7 @@ export default function ReceiveInvoice({
   checkoutService: CheckoutService;
 }) {
   const [isLoading, setIsLoading] = useState(false); // Stato per gestire il caricamento
-  const [userIP, setUserIP] = useState<string | null>(null);
+  // const [userIP, setUserIP] = useState<string | null>(null);
   const [isAllowed, setIsAllowed] = useState(false);
 
 
@@ -49,8 +49,7 @@ export default function ReceiveInvoice({
       try {
         const response = await fetch('https://api64.ipify.org?format=json');
         const data = await response.json();
-        setUserIP(data.ip);
-        console.log("userIP: ", userIP);
+        //setUserIP(data.ip);        
 
         // Controlla se l'IP è autorizzato
         if (ALLOWED_IPS.includes(data.ip)) {
@@ -69,11 +68,11 @@ export default function ReceiveInvoice({
   }
 
   const handleCheckboxChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("handleCheckboxChange")
+
     const isChecked: boolean = event.target.checked;
 
     setIsInvoiceChecked(isChecked);
-    setIsInvoiceValidated(isChecked);
+    // setIsInvoiceValidated(isChecked);
 
     // Aspetta un ciclo di aggiornamento dello stato prima di eseguire altre azioni
     await new Promise(resolve => setTimeout(resolve, 0));
@@ -87,11 +86,7 @@ export default function ReceiveInvoice({
 
       await clearBillingAddressFields();
     }
-
-    console.log("Stato aggiornato, isInvoiceChecked:", isChecked);
   };
-
-
 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,6 +130,7 @@ export default function ReceiveInvoice({
   };
 
   const clearBillingAddressFields = async () => {
+    setIsInvoiceValidated(false);
     const currentBillingAddress = await checkoutService.getState().data.getBillingAddress();
     const fields = await checkoutService.getState().data.getBillingAddressFields('IT');
 

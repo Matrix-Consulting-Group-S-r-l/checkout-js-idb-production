@@ -181,8 +181,8 @@ const PaymentForm: FunctionComponent<
                     checkoutService={checkoutService}
                 />
 
-                <div className="form-actions">
-                    {shouldHidePaymentSubmitButton || (isInvoiceChecked ? !isInvoiceValidated : false) ? (
+                <div className="form-actions" style={{ display: (isInvoiceChecked && !isInvoiceValidated) ? "none" : "block" }}>
+                    {shouldHidePaymentSubmitButton ? (
                         <PaymentMethodSubmitButtonContainer />
                     ) : (
                         <PaymentSubmitButton
