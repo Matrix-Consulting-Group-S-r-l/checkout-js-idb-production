@@ -40,7 +40,7 @@ const PRELOAD_ASSETS = ['billing', 'shipping', 'payment'];
 const eventEmitter = new EventEmitter();
 
 function appConfig(options, argv) {
-    const mode = argv.mode || 'production';
+    const mode = argv.mode || 'production';    
     const isProduction = mode !== 'development';
     const outputFilename = `[name]${isProduction ? '-[contenthash:8]' : ''}`;
 

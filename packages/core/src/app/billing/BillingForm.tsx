@@ -104,6 +104,22 @@ const BillingForm = ({
         handleSelectAddress({});
     };
 
+    const isInvoiceRequired = billingAddress?.customFields?.some(
+        field => field.fieldId === 'field_32' && field.fieldValue === 'Y'
+    ) || false; // Imposta false di default se `customFields` è undefined
+
+    const pivaField = editableFormFields.find(field => field.id === "field_30");
+
+    if (pivaField) {
+        pivaField.required = isInvoiceRequired;
+    }
+
+    /*const companyField = editableFormFields.find(field => field.name === "company");
+
+    if (companyField) {
+        companyField.required = isInvoiceRequired;
+    }*/
+
     return (
         <Form autoComplete="on">
             {shouldRenderStaticAddress && billingAddress && (
@@ -187,17 +203,17 @@ export default withLanguage(
         }: BillingFormProps & WithLanguageProps) =>
             methodId === 'amazonpay'
                 ? lazy<Partial<AddressFormValues>>((values) =>
-                      getCustomFormFieldsValidationSchema({
-                          translate: getTranslateAddressError(language),
-                          formFields: getFields(values && values.countryCode),
-                      }),
-                  )
+                    getCustomFormFieldsValidationSchema({
+                        translate: getTranslateAddressError(language),
+                        formFields: getFields(values && values.countryCode),
+                    }),
+                )
                 : lazy<Partial<AddressFormValues>>((values) =>
-                      getAddressFormFieldsValidationSchema({
-                          language,
-                          formFields: getFields(values && values.countryCode),
-                      }),
-                  ),
+                    getAddressFormFieldsValidationSchema({
+                        language,
+                        formFields: getFields(values && values.countryCode),
+                    }),
+                ),
         enableReinitialize: true,
     })(BillingForm),
 );
