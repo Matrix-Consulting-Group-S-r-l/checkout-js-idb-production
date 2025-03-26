@@ -21,15 +21,14 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
     );
 
     async function onChangeSetInvoice(event: React.ChangeEvent<HTMLInputElement>) {
-
         const billingSameAsShipping = document.getElementById("sameAsBilling") as HTMLInputElement | null;
         if (billingSameAsShipping && billingSameAsShipping.checked == event.target.checked) {
             billingSameAsShipping.click();
         }
 
-        //if (event.target.checked) {
-        await updateBillingAddress(event.target.checked);
-        //}
+        if (event.target.checked) {
+            await updateBillingAddress(event.target.checked);
+        }
     }
 
     useEffect(() => {
@@ -57,7 +56,6 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
                 // Ottieni lo stato attuale dell'indirizzo di fatturazione
                 const currentBillingAddress = await checkoutService.getState().data.getBillingAddress();
                 const fields = await checkoutService.getState().data.getBillingAddressFields('IT');
-
 
                 if (currentBillingAddress) {
                     // Trova l'ID del campo personalizzato "fatt"
@@ -101,6 +99,9 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
             }
         }
     };
+
+
+    console.log("done");
 
     return (
         <>

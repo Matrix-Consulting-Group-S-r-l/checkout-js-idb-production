@@ -518,25 +518,20 @@ class Payment extends Component<
   };
 
   private setSelectedMethod: (method?: PaymentMethod) => void = (method) => {
-    console.log("setSelectedMethod", 1);
+    
     const { checkoutService, getPaymentMethods } = this.props; // --------------[MTX MOD (Single Line)]--------------
     const { selectedMethod } = this.state;
 
     if (selectedMethod === method) {
       return;
-    }
-
-    console.log("setSelectedMethod", 2);
+    }    
 
     if (method) {
-
-      console.log("setSelectedMethod", 3);
+     
       // ------------[MTX START]------------------------
       if (method?.id == 'cod') {
-        console.log("setSelectedMethod", 4);
         selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereContrassegno);
       } else {
-        console.log("setSelectedMethod", 5);
         selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereStandard);
       }
 
