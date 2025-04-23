@@ -22,6 +22,8 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
 
     async function onChangeSetInvoice(event: React.ChangeEvent<HTMLInputElement>) {
 
+        console.log("onChangeSetInvoice")
+
         const billingSameAsShipping = document.getElementById("sameAsBilling") as HTMLInputElement | null;
         if (billingSameAsShipping && billingSameAsShipping.checked == event.target.checked) {
             billingSameAsShipping.click();
@@ -32,8 +34,9 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
         //}
     }
 
-    useEffect(() => {
+    useEffect(() => {        
         const billingSameAsShipping = document.getElementById("sameAsBilling") as HTMLInputElement | null;
+        console.log("useEffect");
         if (billingSameAsShipping && !billingSameAsShipping.checked) {
             const setInvoice = document.getElementById("setInvoice") as HTMLInputElement | null;
             if (setInvoice) {
@@ -104,7 +107,7 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
 
     return (
         <>
-            <div style={{ display: "none" }}>
+            <div style={{ display: "block" }}>
                 <CheckboxFormField
                     id="sameAsBilling"
                     labelContent={labelContent}

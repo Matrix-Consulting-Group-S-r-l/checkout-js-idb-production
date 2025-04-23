@@ -170,7 +170,7 @@ class Payment extends Component<
     // ------------[MTX START]------------------------
     const validMethod = this.getValidDefaultMethod();
     if (validMethod) {
-        this.setSelectedMethod(validMethod); // Metodo valido garantito
+      this.setSelectedMethod(validMethod); // Metodo valido garantito
     }
     // ------------[MTX END]------------------------
 
@@ -518,17 +518,17 @@ class Payment extends Component<
   };
 
   private setSelectedMethod: (method?: PaymentMethod) => void = (method) => {
-    
+
     const { checkoutService, getPaymentMethods } = this.props; // --------------[MTX MOD (Single Line)]--------------
     const { selectedMethod } = this.state;
 
     if (selectedMethod === method) {
       return;
-    }    
+    }
 
     if (method) {
-     
-      // ------------[MTX START]------------------------
+
+      // ------------[MTX START]------------------------      
       if (method?.id == 'cod') {
         selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereContrassegno);
       } else {

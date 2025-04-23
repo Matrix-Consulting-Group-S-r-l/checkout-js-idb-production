@@ -105,10 +105,10 @@ const BillingForm = ({
     };
 
     const isInvoiceRequired = billingAddress?.customFields?.some(
-        field => field.fieldId === 'field_32' && field.fieldValue === 'Y'
+        field => field.fieldId === 'field_33' && field.fieldValue === 'Y'
     ) || false; // Imposta false di default se `customFields` è undefined
 
-    const pivaField = editableFormFields.find(field => field.id === "field_30");
+    const pivaField = editableFormFields.find(field => field.id === "field_29");
 
     if (pivaField) {
         pivaField.required = isInvoiceRequired;
@@ -162,6 +162,8 @@ const BillingForm = ({
             </Fieldset>
 
             {shouldShowOrderComments && <OrderComments />}
+
+            <p>Tutti gli eventuali dati aggiuntivi relativi alla fatturazione vanno comunicati prontamente a <a href="mailto:postvenditaweb@ideabellezza.it" target='_blank'>postvenditaweb@ideabellezza.it</a> Indicando il codice ordine.</p>
 
             <div className="form-actions">
                 <Button

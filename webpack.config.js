@@ -41,6 +41,7 @@ const eventEmitter = new EventEmitter();
 
 function appConfig(options, argv) {
     const mode = argv.mode || 'production';    
+    console.log("mik", mode);
     const isProduction = mode !== 'development';
     const outputFilename = `[name]${isProduction ? '-[contenthash:8]' : ''}`;
 
