@@ -11,7 +11,7 @@ import { lazy } from 'yup';
 
 import { TranslatedString, withLanguage, WithLanguageProps } from '@bigcommerce/checkout/locale';
 import { usePayPalFastlaneAddress } from '@bigcommerce/checkout/paypal-fastlane-integration';
-import { AddressFormSkeleton } from '@bigcommerce/checkout/ui';
+import { AddressFormSkeleton, LoadingOverlay } from '@bigcommerce/checkout/ui';
 
 import {
     AddressForm,
@@ -27,7 +27,6 @@ import { getCustomFormFieldsValidationSchema } from '../formFields';
 import { OrderComments } from '../orderComments';
 import { Button, ButtonVariant } from '../ui/button';
 import { Fieldset, Form } from '../ui/form';
-import { LoadingOverlay } from '../ui/loading';
 
 import StaticBillingAddress from './StaticBillingAddress';
 
@@ -104,22 +103,6 @@ const BillingForm = ({
         handleSelectAddress({});
     };
 
-    const isInvoiceRequired = billingAddress?.customFields?.some(
-        field => field.fieldId === 'field_33' && field.fieldValue === 'Y'
-    ) || false; // Imposta false di default se `customFields` è undefined
-
-    const pivaField = editableFormFields.find(field => field.id === "field_29");
-
-    if (pivaField) {
-        pivaField.required = isInvoiceRequired;
-    }
-
-    /*const companyField = editableFormFields.find(field => field.name === "company");
-
-    if (companyField) {
-        companyField.required = isInvoiceRequired;
-    }*/
-
     return (
         <Form autoComplete="on">
             {shouldRenderStaticAddress && billingAddress && (
@@ -162,8 +145,6 @@ const BillingForm = ({
             </Fieldset>
 
             {shouldShowOrderComments && <OrderComments />}
-
-            <p>Tutti gli eventuali dati aggiuntivi relativi alla fatturazione vanno comunicati prontamente a <a href="mailto:postvenditaweb@ideabellezza.it" target='_blank'>postvenditaweb@ideabellezza.it</a> Indicando il codice ordine.</p>
 
             <div className="form-actions">
                 <Button

@@ -1,9 +1,9 @@
-import React, { FunctionComponent, memo, useContext, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, memo, useMemo, useContext, useEffect } from 'react';
 
 import { TranslatedString } from '@bigcommerce/checkout/locale';
-
 import { CheckboxFormField } from '../ui/form';
 import { CheckoutContext } from '@bigcommerce/checkout/payment-integration-api';
+import { mtxConfig } from '../mtxConfig';
 
 export interface BillingSameAsShippingFieldProps {
     onChange?(isChecked: boolean): void;
@@ -13,95 +13,100 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
     onChange,
 }) => {
 
-    const context = useContext(CheckoutContext);
-
     const labelContent = useMemo(
         () => <TranslatedString id="billing.use_shipping_address_label" />,
         [],
     );
 
-    async function onChangeSetInvoice(event: React.ChangeEvent<HTMLInputElement>) {
+    const context = useContext(CheckoutContext);
+    const checkoutService = context?.checkoutService;
+    const currentCarrier = checkoutService?.getState().data.getSelectedShippingOption(); // corriere selezionato
 
-        console.log("onChangeSetInvoice")
+    useEffect(() => {
 
-        const billingSameAsShipping = document.getElementById("sameAsBilling") as HTMLInputElement | null;
-        if (billingSameAsShipping && billingSameAsShipping.checked == event.target.checked) {
-            billingSameAsShipping.click();
+        const currentBillingAddress = checkoutService?.getState().data.getBillingAddress();
+        const currentBillingAddressCustomFields = currentBillingAddress?.customFields || [];
+
+        console.log("run currentBillingAddress ...", currentBillingAddress)
+
+        const fattFieldId = "field_" + mtxConfig.AddressCustomFields.fattID;
+        const fieldValue = currentBillingAddressCustomFields.find(field => field.fieldId === fattFieldId)?.fieldValue || '';
+
+        const checkboxInvoce = document.getElementById("setInvoice") as HTMLInputElement | null;
+        if (checkboxInvoce) {
+            checkboxInvoce.checked = fieldValue === 'Y';
         }
 
-        //if (event.target.checked) {
-        await updateBillingAddress(event.target.checked);
-        //}
-    }
 
-    useEffect(() => {        
-        const billingSameAsShipping = document.getElementById("sameAsBilling") as HTMLInputElement | null;
-        console.log("useEffect");
-        if (billingSameAsShipping && !billingSameAsShipping.checked) {
-            const setInvoice = document.getElementById("setInvoice") as HTMLInputElement | null;
-            if (setInvoice) {
-                setInvoice.checked = true;
-            }
-        }
     }, []);
 
-    // Funzione per ottenere l'ID di un custom field in base alla label
-    const getCustomFieldIdByLabel = (fields: any[], label: string) => {
-        const field = fields.find((f) => f.label.toLowerCase() === label.toLowerCase() && f.custom);
-        return field ? field.id : null;
+
+    const onChangeSetInvoice = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+        const checkboxInvoce = event.target;
+        const checkboxInvoceState = checkboxInvoce.checked;
+        const checkboxSameAsBilling = document.getElementById("sameAsBilling") as HTMLInputElement | null;
+        if (currentCarrier) {
+            if (currentCarrier.description === mtxConfig.shippingMethods.corriereStandard) {
+                enableSameAsBilling(!checkboxInvoceState, checkboxSameAsBilling);
+                enableInvoice(checkboxInvoceState, event.target);
+
+            } else if (currentCarrier.description === mtxConfig.shippingMethods.corriereConsegnaInNegozio) {
+                enableSameAsBilling(false, checkboxSameAsBilling);
+                enableInvoice(checkboxInvoceState, event.target);
+            }
+        } else {
+            // Gestire caso senza corriere
+        }
     };
 
-    // Funzione separata per aggiornare l'indirizzo di fatturazione
-    const updateBillingAddress = async (isChecked: boolean) => {
-        const checkoutService = context?.checkoutService;
+    const enableSameAsBilling = (enable: boolean, checkboxSameAsBilling: HTMLInputElement | null) => {
+        if (checkboxSameAsBilling && checkboxSameAsBilling.checked !== enable) {
+            checkboxSameAsBilling.click();
+        }
+    };
 
-        if (checkoutService) {
-            try {
-                // Ottieni lo stato attuale dell'indirizzo di fatturazione
-                const currentBillingAddress = await checkoutService.getState().data.getBillingAddress();
-                const fields = await checkoutService.getState().data.getBillingAddressFields('IT');
-
-
-                if (currentBillingAddress) {
-                    // Trova l'ID del campo personalizzato "fatt"
-                    const fattFieldId = getCustomFieldIdByLabel(fields, 'fatt');
-
-                    if (!fattFieldId) {
-                        console.error("Il campo 'fatt' non esiste tra i campi disponibili.");
-                        return;
-                    }
-
-                    // Determina il nuovo valore del campo in base a isChecked
-                    const newFieldValue = isChecked ? 'Y' : '';
-
-                    // Verifica se il campo "fatt" è già presente nei customFields
-                    const existingField = currentBillingAddress.customFields?.find(field => field.fieldId === fattFieldId);
-
-                    let updatedCustomFields;
-
-                    if (existingField) {
-                        // Se il campo esiste, aggiorniamo il valore
-                        updatedCustomFields = currentBillingAddress.customFields.map(field =>
-                            field.fieldId === fattFieldId ? { ...field, fieldValue: newFieldValue } : field
-                        );
-                    } else {
-                        // Se il campo non esiste, lo aggiungiamo
-                        updatedCustomFields = [
-                            ...(currentBillingAddress.customFields || []), // Mantieni i campi esistenti
-                            { fieldId: fattFieldId, fieldValue: newFieldValue } // Aggiungi il nuovo campo
-                        ];
-                    }
-
-                    // Aggiorna l'indirizzo di fatturazione con il nuovo valore
-                    await checkoutService.updateBillingAddress({
-                        ...currentBillingAddress, // Mantieni i dati esistenti
-                        customFields: updatedCustomFields, // Aggiorna o aggiungi i custom fields
-                    });
-
-                }
-            } catch (error) {
-                console.error("Errore nell'aggiornamento dell'indirizzo di fatturazione:", error);
+    const enableInvoice = async (enable: boolean, checkboxInvoce: HTMLInputElement | null) => {
+        if (checkboxInvoce) {
+            if (enable) {
+                checkboxInvoce.checked = true; // inviare fattura
+                updateCustomFieldInvoice(true);
+            } else {
+                checkboxInvoce.checked = false; // non inviare fattura
+                updateCustomFieldInvoice(false);
             }
+        }
+    };
+
+    const updateCustomFieldInvoice = async (isChecked: boolean) => {
+        const currentBillingAddress = checkoutService?.getState().data.getBillingAddress();
+        const currentBillingAddressCustomFields = currentBillingAddress?.customFields || [];
+
+        const fattFieldId = "field_" + mtxConfig.AddressCustomFields.fattID;
+        const fieldValue = isChecked ? 'Y' : '';
+
+        const hasFattField = currentBillingAddressCustomFields.some(field => field.fieldId === fattFieldId);
+
+        let updatedCustomFields;
+
+        if (hasFattField) {
+            updatedCustomFields = currentBillingAddressCustomFields.map(field =>
+                field.fieldId === fattFieldId
+                    ? { ...field, fieldValue }
+                    : field
+            );
+        } else {
+            updatedCustomFields = [
+                ...currentBillingAddressCustomFields,
+                { fieldId: fattFieldId, fieldValue },
+            ];
+        }
+
+        if (currentBillingAddress) {
+            await checkoutService?.updateBillingAddress({
+                ...currentBillingAddress,
+                customFields: updatedCustomFields,
+            });
         }
     };
 
@@ -117,8 +122,21 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
                 />
             </div>
             <div className="form-field">
-                <input id="setInvoice" type="checkbox" className="form-checkbox optimizedCheckout-form-checkbox" name="" data-test="billingSameAsShipping" value="y" onChange={onChangeSetInvoice} />
-                <label htmlFor="setInvoice" className="form-label optimizedCheckout-form-label" style={{ fontWeight: "700", marginTop: "10px", fontSize: "1.2rem" }}>Hai bisogno della fattura?</label>
+                <input
+                    id="setInvoice"
+                    type="checkbox"
+                    className="form-checkbox optimizedCheckout-form-checkbox"
+                    data-test="billingSameAsShipping"
+                    value="y"
+                    onChange={onChangeSetInvoice}
+                />
+                <label
+                    htmlFor="setInvoice"
+                    className="form-label optimizedCheckout-form-label"
+                    style={{ fontWeight: "700", marginTop: "10px", fontSize: "1.2rem" }}
+                >
+                    Hai bisogno della fattura?
+                </label>
             </div>
         </>
     );
