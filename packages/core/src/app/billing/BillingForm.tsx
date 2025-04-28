@@ -103,6 +103,16 @@ const BillingForm = ({
         handleSelectAddress({});
     };
 
+    const isInvoiceRequired = billingAddress?.customFields?.some(
+        field => field.fieldId === 'field_33' && field.fieldValue === 'Y'
+    ) || false; // Imposta false di default se `customFields` è undefined
+
+    const pivaField = editableFormFields.find(field => field.id === "field_29");
+
+    if (pivaField) {
+        pivaField.required = isInvoiceRequired;
+    }
+
     return (
         <Form autoComplete="on">
             {shouldRenderStaticAddress && billingAddress && (
