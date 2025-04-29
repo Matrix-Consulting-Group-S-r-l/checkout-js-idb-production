@@ -149,7 +149,7 @@ class Payment extends Component<
       onReady = noop,
       usableStoreCredit,
       checkoutServiceSubscribe,
-      methods,
+      // methods,
     } = this.props;
 
     if (usableStoreCredit) {

@@ -1,6 +1,6 @@
 import { PaymentMethod } from '@bigcommerce/checkout-sdk';
 import { FormikProps, withFormik, WithFormikConfig } from 'formik';
-import { isNil, method, noop, omitBy } from 'lodash';
+import { isNil, noop, omitBy } from 'lodash';
 import React, { FunctionComponent, memo, useCallback, useContext, useMemo } from 'react';
 import { ObjectSchema } from 'yup';
 
