@@ -40,9 +40,13 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
         const checkboxInvoce = document.getElementById("setInvoice") as HTMLInputElement | null;
         if (checkboxInvoce) {
             checkboxInvoce.checked = fieldValue === 'Y';
+            const checkboxSameAsBilling = document.getElementById("sameAsBilling") as HTMLInputElement | null;
+            if (fieldValue === 'Y' && checkboxSameAsBilling?.checked) {
+                setTimeout(() => {
+                    enableSameAsBilling(false, checkboxSameAsBilling);
+                }, 1200);
+            }
         }
-
-
     }, []);
 
     // Gestisce il cambio del checkbox "Hai bisogno della fattura?"
@@ -129,7 +133,7 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
     // Renderizza il componente con due checkbox: "Same as Billing" e "Hai bisogno della fattura?"
     return (
         <>
-            <div style={{ display: "block" }}>
+            <div style={{ display: "none" }}>
                 <CheckboxFormField
                     id="sameAsBilling"
                     labelContent={labelContent}

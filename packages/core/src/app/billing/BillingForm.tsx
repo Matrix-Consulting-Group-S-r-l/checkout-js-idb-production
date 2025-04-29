@@ -29,6 +29,7 @@ import { Button, ButtonVariant } from '../ui/button';
 import { Fieldset, Form } from '../ui/form';
 
 import StaticBillingAddress from './StaticBillingAddress';
+import { mtxConfig } from '../mtxConfig';
 
 export type BillingFormValues = AddressFormValues & { orderComment: string };
 
@@ -104,10 +105,12 @@ const BillingForm = ({
     };
 
     const isInvoiceRequired = billingAddress?.customFields?.some(
-        field => field.fieldId === 'field_33' && field.fieldValue === 'Y'
+        field => field.fieldId === ("field_" + mtxConfig.AddressCustomFields.fattID) && field.fieldValue === 'Y'
     ) || false; // Imposta false di default se `customFields` è undefined
 
-    const pivaField = editableFormFields.find(field => field.id === "field_29");
+    const pivaField = editableFormFields.find(field => field.id === ("field_" + mtxConfig.AddressCustomFields.pIvaID));
+
+    console.log(isInvoiceRequired, pivaField, ("field_" + mtxConfig.AddressCustomFields.pIvaID));
 
     if (pivaField) {
         pivaField.required = isInvoiceRequired;

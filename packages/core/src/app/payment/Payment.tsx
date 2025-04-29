@@ -122,6 +122,7 @@ class Payment extends Component<
 
   // ------------[MTX START]------------------------
   private getValidDefaultMethod(): PaymentMethod | undefined {
+
     const { defaultMethod, methods } = this.props;
     const { selectedMethod } = this.state;
 
@@ -148,6 +149,7 @@ class Payment extends Component<
       onReady = noop,
       usableStoreCredit,
       checkoutServiceSubscribe,
+      methods,
     } = this.props;
 
     if (usableStoreCredit) {
@@ -252,6 +254,7 @@ class Payment extends Component<
               validationSchema={
                 (uniqueSelectedMethodId && validationSchemas[uniqueSelectedMethodId]) || undefined
               }
+              checkoutService={this.props.checkoutService}
             />
           )}
         </ChecklistSkeleton>
@@ -529,14 +532,37 @@ class Payment extends Component<
     if (method) {
 
       // ------------[MTX START]------------------------      
-      if (method?.id == 'cod') {
+      const checkoutState = checkoutService.getState();
+      const currentCarrier = checkoutState.data.getSelectedShippingOption();
+      const isConsegnaInNegozio = currentCarrier?.description === mtxConfig.shippingMethods.corriereConsegnaInNegozio;
+
+      if (method?.id === 'cod' && !isConsegnaInNegozio) {
+        // Se il metodo è "Contanti alla consegna", seleziona "Corriere Contrassegno"
         selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereContrassegno);
-      } else {
+      } else if (!isConsegnaInNegozio) {
+        // Per altri metodi, seleziona "Corriere Standard" solo se NON è già Consegna in Negozio
         selectCarrier(checkoutService, mtxConfig.shippingMethods.corriereStandard);
       }
 
-      const methodSelected = getPaymentMethods().findIndex((pay: any) => pay.id === method?.id);
-      setGlobalState('mtxIndexOfSelectedPayment', methodSelected > -1 ? methodSelected : 0);
+      if (isConsegnaInNegozio && method?.id === 'cod') {
+
+        setGlobalState('mtxIndexOfSelectedPayment', 0);
+
+        // Seleziono il primo metodo di pagamento * questo è un caso limite _> Consegna in Negozio e Contanti alla consegna _> caso da evitare
+        setTimeout(() => {
+          const firstRadio = document.querySelector<HTMLInputElement>(
+            '.form-checklist input[type="radio"]'
+          );
+          if (firstRadio && !firstRadio.checked) {
+            firstRadio.click();
+          }
+        }, 100); // piccolo timeout per essere sicuri che il DOM sia aggiornato
+
+      } else {
+        const methodSelected = getPaymentMethods().findIndex((pay: any) => pay.id === method?.id);
+        setGlobalState('mtxIndexOfSelectedPayment', methodSelected > -1 ? methodSelected : 0);
+      }
+
       // ------------[MTX END]------------------------
 
       this.trackSelectedPaymentMethod(method);
@@ -684,6 +710,7 @@ export function mapToPaymentProps({
   let filteredMethods;
 
   filteredMethods = methods.filter((method: PaymentMethod) => {
+
     if (method.id === PaymentMethodId.Bolt && method.initializationData) {
       return !!method.initializationData.showInCheckout;
     }
@@ -750,8 +777,10 @@ export function mapToPaymentProps({
 
 // --------------[MTX START]--------------
 async function selectCarrier(checkoutService: any, carrierDescription: string) {
+
   const checkoutState = checkoutService.getState();
   const checkoutId = checkoutState.data.getCheckout()?.id;
+
   if (checkoutId) {
     const shippingState = await checkoutService.loadShippingOptions();
 
