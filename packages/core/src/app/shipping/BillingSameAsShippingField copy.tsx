@@ -98,10 +98,7 @@ const BillingSameAsShippingField: FunctionComponent<BillingSameAsShippingFieldPr
                 console.error("Errore nell'aggiornamento dell'indirizzo di fatturazione:", error);
             }
         }
-    };
-
-
-    console.log("done");
+    };    
 
     return (
         <>

@@ -108,9 +108,7 @@ const BillingForm = ({
         field => field.fieldId === ("field_" + mtxConfig.AddressCustomFields.fattID) && field.fieldValue === 'Y'
     ) || false; // Imposta false di default se `customFields` è undefined
 
-    const pivaField = editableFormFields.find(field => field.id === ("field_" + mtxConfig.AddressCustomFields.pIvaID));
-
-    console.log(isInvoiceRequired, pivaField, ("field_" + mtxConfig.AddressCustomFields.pIvaID));
+    const pivaField = editableFormFields.find(field => field.id === ("field_" + mtxConfig.AddressCustomFields.pIvaID));    
 
     if (pivaField) {
         pivaField.required = isInvoiceRequired;
