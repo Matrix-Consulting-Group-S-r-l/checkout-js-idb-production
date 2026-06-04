@@ -96,6 +96,14 @@ class AddressForm extends Component<AddressFormProps & WithLanguageProps> {
             isFloatingLabelEnabled,
         } = this.props;
 
+        const processedFields = formFields
+            .filter(({ name }) => name !== 'address2')
+            .map((field) => {
+                if (field.name === 'address1') return { ...field, maxLength: 35, required: true };
+                if (field.name === 'phone') return { ...field, required: true };
+                return field;
+            });
+
         return (
             <>
                 <Fieldset>
@@ -103,7 +111,7 @@ class AddressForm extends Component<AddressFormProps & WithLanguageProps> {
                         className="checkout-address"
                         ref={this.containerRef as RefObject<HTMLDivElement>}
                     >
-                        {formFields.map((field) => {
+                        {processedFields.map((field) => {
                             const addressFieldName = field.name;
                             const translatedPlaceholderId = PLACEHOLDER[addressFieldName];
 

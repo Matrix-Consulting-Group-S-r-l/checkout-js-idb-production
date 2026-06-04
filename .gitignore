@@ -5,6 +5,7 @@ junit.xml
 __temp__
 node_modules
 build
+.claude
 coverage
 /dist-tools
 /packages/**/generated

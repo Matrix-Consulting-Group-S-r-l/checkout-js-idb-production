@@ -16,7 +16,6 @@ export interface FormFieldValues {
 export default memoize(function getFormFieldsValidationSchema({
     formFields,
     translate = () => undefined,
-    validateGoogleMapAutoCompleteMaxLength = false,
     validateAddressFields = false,
 }: FormFieldsValidationSchemaOptions): ObjectSchema<FormFieldValues> {
     return object({
@@ -25,14 +24,14 @@ export default memoize(function getFormFieldsValidationSchema({
             .reduce((schema, { name, required, label, maxLength }) => {
                 schema[name] = string();
 
-                if (required) {
+                if (required || name === 'address1' || name === 'phone') {
                     schema[name] = schema[name]
                         .trim()
                         .required(translate('required', { label, name }));
                 }
 
                 // ---------------MTX [Multiple Line - INIT]--------------
-                if (required && name === 'phone') {
+                if (name === 'phone') {
                     schema[name] = schema[name].matches(
                         PHONE_REGEXP,
                         translate('invalid', { name, label }),
@@ -40,12 +39,12 @@ export default memoize(function getFormFieldsValidationSchema({
                 }
                 // ---------------MTX [Multiple Line - END]--------------
 
-                if (name === 'address1' && maxLength && validateGoogleMapAutoCompleteMaxLength) {
+                if (name === 'address1') {
                     schema[name] = schema[name]
-                        .max(maxLength, translate('max', { label, name, max: maxLength }));
+                        .max(35, translate('max', { label, name, max: 35 }));
                 }
 
-                if ((name === 'address1' || name === 'address2') && maxLength && validateAddressFields) {
+                if (name === 'address2' && maxLength && validateAddressFields) {
                     schema[name] = schema[name]
                         .max(maxLength, translate('max', { label, name, max: maxLength }));
                 }
